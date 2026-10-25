@@ -6,6 +6,15 @@ A weekly protein challenge for you and your friends. Set a daily protein goal, l
 - **Supabase (free tier)** handles login and stores the shared data, so friends see each other's scores.
 - **Demo mode.** With no Supabase keys in `js/config.js`, the app saves to your browser and adds a few pretend friends, so you can try it right away.
 
+## Features
+
+- **Weekly leaderboard** with fair, goal-normalized scoring (below).
+- **Logging** of protein, calories, carbs and fat. **Smart logging** suggests foods you've logged before as you type; picking one fills in the numbers from the last time, and you can edit them before adding.
+- **Water tracking (optional, private).** Turn it on in the Group tab or the welcome tour. It never shows on the leaderboard.
+- **Gentle reminders** at 2 PM and 8 PM, only if you're behind on protein, at most once each per day. They show in the app, or as browser notifications if you allow them. Browsers can't send these with the app fully closed, so a missed reminder shows the next time you open it.
+- **Group admin.** Whoever creates a group is its admin and can remove members and make a new invite code. If the admin leaves, the longest-standing member takes over.
+- **What's new tour.** Shown once per user per browser (stored in `localStorage`). You can replay it from the Group tab.
+
 ## How scoring works
 
 | | |
@@ -23,6 +32,12 @@ python3 -m http.server 5173
 ```
 
 Open http://localhost:5173. You need a local server because ES modules don't load from `file://`.
+
+Add `?demo` to the URL (http://localhost:5173/?demo) to use demo mode even when Supabase is configured. It's handy for trying changes without touching real data.
+
+## Upgrading the database
+
+`supabase/schema.sql` is safe to re-run: it adds new tables, columns and functions in place and keeps existing data. After pulling changes that touch it, paste it into **Supabase → SQL Editor** and run it **before** deploying the new site. Supabase will warn about "destructive operations"; that's the `drop … if exists` lines that let the script re-run, not a data deletion.
 
 ## Set up for real (about 10 minutes, $0)
 
@@ -66,17 +81,21 @@ Create a group, open the **Group** tab, and send the invite link. Anyone who sig
 index.html            app shell
 css/styles.css        styles (light + dark)
 js/app.js             UI: views, actions, forms
+js/autofill.js        food-name suggestions from your history
+js/reminders.js       2 PM / 8 PM reminder rules + browser notifications
+js/tour.js            one-time "what's new" walkthrough
 js/scoring.js         normalized points + leaderboard ranking
 js/dates.js           local-date + Monday-week helpers
 js/api.js             picks Supabase or demo backend
 js/supabase-api.js    Supabase backend
 js/local-api.js       localStorage demo backend (same interface)
-supabase/schema.sql   tables, triggers, group RPCs, RLS policies
+supabase/schema.sql   tables, triggers, group/admin/water RPCs, RLS policies
 ```
 
 ## Security (kept deliberately simple)
 
 - Login is plain email and password through Supabase Auth.
 - Users can read only their own group's profiles and logs, and can only add or delete their own logs.
-- Your user ID and goal are stamped onto each entry by the server, not taken from the browser. Group membership changes only through `create_group` / `join_group` / `leave_group`.
+- Your user ID and goal are stamped onto each entry by the server, not taken from the browser. Group membership and roles change only through the `create_group` / `join_group` / `leave_group` / `remove_member` functions, and only an admin can remove people or change the invite code.
+- Water logs are visible only to their owner.
 - Nothing stops someone from logging protein they didn't eat. It's an honor system among friends.

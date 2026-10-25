@@ -9,16 +9,17 @@ export const dayPercent = (protein, goal) => (goal > 0 ? (protein / goal) * 100 
 
 export const dayPoints = (protein, goal) => Math.round(Math.min(dayPercent(protein, goal), DAY_MAX));
 
-// logs → Map(date → { protein, carbs, fat, goal, entries }).
+// logs → Map(date → { protein, carbs, fat, calories, goal, entries }).
 // A day's goal is the highest goal snapshot among that day's entries.
 export function summarizeDays(logs) {
   const days = new Map();
   for (const log of logs) {
     let day = days.get(log.log_date);
-    if (!day) days.set(log.log_date, (day = { protein: 0, carbs: 0, fat: 0, goal: 0, entries: [] }));
+    if (!day) days.set(log.log_date, (day = { protein: 0, carbs: 0, fat: 0, calories: 0, goal: 0, entries: [] }));
     day.protein += Number(log.protein) || 0;
     day.carbs += Number(log.carbs) || 0;
     day.fat += Number(log.fat) || 0;
+    day.calories += Number(log.calories) || 0;
     day.goal = Math.max(day.goal, Number(log.goal_snapshot) || 0);
     day.entries.push(log);
   }

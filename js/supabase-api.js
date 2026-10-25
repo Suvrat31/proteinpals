@@ -57,9 +57,17 @@ export function createSupabaseApi(url, key) {
       must(await sb.rpc('leave_group'));
     },
 
+    async removeMember(memberId) {
+      must(await sb.rpc('remove_member', { member: memberId }));
+    },
+
+    async regenerateInviteCode() {
+      return must(await sb.rpc('regenerate_invite_code'));
+    },
+
     async getMembers(groupId) {
       return must(await sb.from('profiles')
-        .select('id, display_name, daily_goal, invited_by, created_at')
+        .select('id, display_name, daily_goal, invited_by, role, joined_at, created_at')
         .eq('group_id', groupId));
     },
 
@@ -76,6 +84,25 @@ export function createSupabaseApi(url, key) {
 
     async deleteLog(id) {
       must(await sb.from('food_logs').delete().eq('id', id));
+    },
+
+    // My most recent named entries, newest first, for autofill suggestions.
+    async getFoodHistory(userId) {
+      return must(await sb.from('food_logs')
+        .select('food, protein, carbs, fat, calories, created_at')
+        .eq('user_id', userId)
+        .not('food', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(300));
+    },
+
+    // Water is private: RLS only ever returns my own rows.
+    async getWater({ from, to }) {
+      return must(await sb.from('water_days').select('log_date, ml').gte('log_date', from).lte('log_date', to));
+    },
+
+    async addWater(date, deltaMl) {
+      return must(await sb.rpc('add_water', { day: date, delta_ml: deltaMl }));
     },
   };
 }

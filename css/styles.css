@@ -255,6 +255,77 @@ form.stack { display: grid; gap: 12px; }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
 #toast.error { background: var(--danger); color: #fff; }
 
+/* ─── v2: autofill ──────────────────────────────────────── */
+
+.combo { position: relative; }
+.suggestions {
+  position: absolute; z-index: 10; top: 100%; left: 0; right: 0; margin: 4px 0 0; padding: 4px;
+  list-style: none; background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.14); max-height: 280px; overflow-y: auto;
+}
+.suggestions li { padding: 8px 10px; border-radius: 8px; cursor: pointer; display: grid; gap: 1px; }
+.suggestions li:hover, .suggestions li[aria-selected="true"] { background: var(--accent-soft); }
+.suggestions .s-name { color: var(--text); font-weight: 600; font-size: 15px; }
+.suggestions .s-meta { color: var(--muted); font-weight: 400; font-size: 12px; }
+.fill-hint { margin: 0; font-size: 13px; color: var(--accent-strong); }
+
+/* ─── v2: water ─────────────────────────────────────────── */
+
+.water h2 { margin: 0; }
+.water-total strong { font-size: 18px; }
+.water-bar { height: 10px; border-radius: 99px; background: var(--track); overflow: hidden; margin: 12px 0; }
+.water-bar i { display: block; height: 100%; background: #0ea5e9; border-radius: 99px; transition: width 0.3s ease; }
+.water-bar.done i { background: #0284c7; }
+.water-btns { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; }
+.water-btns small { font-weight: 500; color: var(--muted); }
+
+/* ─── v2: group admin & settings ────────────────────────── */
+
+.role-pill {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 1px 6px; border-radius: 99px; background: color-mix(in srgb, #facc15 30%, transparent); color: var(--text);
+  vertical-align: 2px;
+}
+.members li { align-items: center; }
+.small-btn { padding: 6px 10px; font-size: 13px; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; font-weight: 500; color: var(--text); cursor: pointer; }
+.check input { width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--accent); flex: none; }
+.check input:disabled + span { opacity: 0.5; }
+.btn.quiet { border-color: transparent; color: var(--muted); font-weight: 500; }
+
+/* ─── v2: reminder nudge ────────────────────────────────── */
+
+#nudge {
+  position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 20;
+  width: min(440px, calc(100% - 32px)); display: flex; align-items: center; gap: 12px; justify-content: space-between;
+  background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+  border-radius: 12px; padding: 12px 12px 12px 14px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.18);
+  animation: nudge-in 0.25s ease;
+}
+#nudge[hidden] { display: none; }
+#nudge strong { display: block; }
+#nudge p { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+@keyframes nudge-in { from { opacity: 0; transform: translate(-50%, 12px); } }
+
+/* ─── v2: what's-new tour ───────────────────────────────── */
+
+#tour {
+  border: 0; padding: 0; border-radius: 18px; width: min(440px, calc(100% - 32px));
+  background: var(--card); color: var(--text); box-shadow: 0 20px 60px rgb(0 0 0 / 0.3);
+}
+#tour::backdrop { background: rgb(0 0 0 / 0.45); }
+.tour { padding: 18px 20px 16px; display: grid; gap: 12px; }
+.tour h2 { margin: 0; font-size: 20px; }
+.tour p { margin: 0; color: var(--muted); }
+.tour-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.tour-list li { display: flex; gap: 12px; align-items: flex-start; }
+.tour-list p { font-size: 14px; }
+.tour-icon { font-size: 20px; width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 10px; background: var(--track); }
+.tour-actions { display: grid; gap: 8px; margin-top: 4px; }
+.tour-dots { display: flex; justify-content: center; gap: 6px; }
+.tour-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+.tour-dots i.on { background: var(--accent); }
+
 @media (max-width: 420px) {
   .progress { grid-template-columns: 112px 1fr; gap: 14px; }
   .ring-wrap { width: 112px; height: 112px; }
